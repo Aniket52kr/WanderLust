@@ -1,0 +1,160 @@
+<!-- show specific listing data based on id -->
+<!-- use layout boilerplate ejs template for all ejs template -->
+
+<% layout("/layouts/boilerplate") -%>
+<div class="row mt-3">
+    <div class="col-8 offset-3">
+        <h3><%= listing.title %></h3>
+    </div> 
+    
+    <div class="card col-6 offset-3 show-card listing-card">
+        <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="listing_image">
+        <div class="card-body">
+            <p class="card-text">Owned by <i><%= listing.owner.username %></i></p>
+            <p class="card-text"><%= listing.description %></p>
+            <p class="card-text">&#8377; <%= listing.price.toLocaleString("en-IN") %></p>    
+            <p class="card-text"><%= listing.country %></p>
+            <p class="card-text"><%= listing.location %></p>
+        </div>
+    </div> 
+
+    <!-- Check if current user or owner of the listing is the same, allowing edit or delete -->
+    <% if(currUser && currUser._id.equals(listing.owner._id)) { %>
+        <div class="btns">
+            <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark col-1 offset-3 edit-btn">Edit</a>
+            <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
+                <button  class="btn btn-dark  offset-5">Delete</button>
+            </form>  
+        </div>
+    <% } %>
+
+    <!-- Review Form -->
+    <div class="col-8 offset-3 mb-3" >
+        <% if(currUser) { %>    
+            <hr/>
+            <h4>Leave a Review</h4>
+            <form method="POST" action="/listings/<%= listing._id %>/reviews" novalidate class="needs-validation">
+                <div class="mb-3 mt-3">
+                    <label for="rating" class="form-label">Rating</label>
+                    <fieldset class="starability-slot">
+                        <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                        <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                        <label for="first-rate1" title="Terrible">1 star</label>
+                        <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                        <label for="first-rate2" title="Not good">2 stars</label>
+                        <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                        <label for="first-rate3" title="Average">3 stars</label>
+                        <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                        <label for="first-rate4" title="Very good">4 stars</label>
+                        <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                        <label for="first-rate5" title="Amazing">5 stars</label>
+                    </fieldset>
+                </div>
+              
+                <div class="mb-3 mt-3">
+                    <label for="rating" class="form-label">Comment</label>
+                    <textarea id="Comment" 
+                        name="review[comment]" 
+                        cols="30" 
+                        rows="5" 
+                        class="form-control"
+                        required
+                    ></textarea>
+                    <div class="invalid-feedback">Please add some comments for the review</div>
+                </div>
+                <button class="btn btn-outline-dark">Submit</button>
+            </form>
+            <hr/>
+        <% } %>  
+
+        <!-- Display all the reviews to the user -->
+        <% if(listing.reviews.length > 0)  { %>
+            <div class="row">
+                <p><b>All Reviews</b></p>
+                <% for(review of listing.reviews) { %>
+                    <div class="card col-5 ms-3 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">@<%= review.author.username %></h5>
+                            <p class="starability-result card-text" data-rating="<%= review.rating %>"></p>
+                            <p class="card-text"><%= review.comment %></p>
+                            <form class="mb-3" method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                                <button class="btn btn-sm btn-dark">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+            <hr />
+        <% } %>
+    </div>
+
+    <!-- Integrate Map Here -->
+    <h3 class="col-6 offset-3">Where you'll be</h3>
+    <div id="map" style="height: 400px; width: 80vh;" class="col-8 offset-3"></div>
+</div>   
+
+<!-- Leaflet Map and AJAX Integration -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        let address = "<%= listing.location %>, <%= listing.country %>";
+        let map;
+
+        // Initialize map with standard and satellite layers
+        function initializeMap(lat, lng) {
+            // Define tile layers
+            const standardLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            });
+
+            const satelliteLayer = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            });
+
+            // Create map and set initial view
+            map = L.map('map', {
+                center: [lat, lng],
+                zoom: 13,
+                layers: [standardLayer] // Default layer
+            });
+
+            // Add marker
+            L.marker([lat, lng])
+                .addTo(map)
+                .bindPopup('<b><%= listing.title %></b><p>Exact location will be provided after booking</p>')
+                .openPopup();
+
+            // Layer control to switch between Standard and Satellite views
+            L.control.layers({
+                "Standard": standardLayer,
+                "Satellite": satelliteLayer
+            }).addTo(map);
+        }
+
+        // Fetch coordinates using Positionstack API
+        $.ajax({
+            url: 'https://api.positionstack.com/v1/forward',
+            data: {
+                access_key: '<%= process.env.MAP_TOKEN %>',
+                query: address,
+                limit: 1
+            }
+        }).done(function(data) {
+            if (data && data.data.length > 0) {
+                let location = data.data[0];
+                let lat = location.latitude;
+                let lng = location.longitude;
+                initializeMap(lat, lng);
+            } else {
+                console.error("Location not found");
+                alert("Unable to find the location on the map.");
+            }
+        }).fail(function(error) {
+            console.error("Error fetching location:", error);
+            alert("Error loading map. Please try again later.");
+        });
+    });
+</script>
