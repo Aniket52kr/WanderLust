@@ -30,3 +30,15 @@ Wunderlust is a travel-based web application that allows users to explore, creat
 - **Authentication**: Passport.js  
 - **Others**: npm packages, sessions, Google Maps API  
 
+
+
+![Screenshot (240)](https://github.com/user-attachments/assets/02b8a161-230c-443d-8c59-f3322cf5a536)
+![Screenshot (241)](https://github.com/user-attachments/assets/f174888c-2c96-4900-9770-30735eb8aa6d)
+![Screenshot (242)](https://github.com/user-attachments/assets/b12a18c4-bbea-4b22-b0f4-bd6f5cdeedf9)
+![Screenshot (243)](https://github.com/user-attachments/assets/8c6090d8-a6a9-483d-8ecb-fd70e2b26cb2)
+![Screenshot (244)](https://github.com/user-attachments/assets/0be9e8ee-592c-4734-8590-beb15b7969e6)
+![Screenshot (245)](https://github.com/user-attachments/assets/ceb07c25-bc3b-4411-a173-d979d02774d5)
+![Screenshot (246)](https://github.com/user-attachments/assets/c633fb72-8955-4081-8709-a1d818408ce9)
+
+
+
