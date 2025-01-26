@@ -1,7 +1,3 @@
-Here’s an overview of your Wunderlust project that you can add to your GitHub README:
-
----
-
 # Wunderlust  
 
 Wunderlust is a travel-based web application that allows users to explore, create, and interact with travel listings. It combines seamless user experience with robust functionality, making it an ideal platform for wanderlust-driven adventurers.
