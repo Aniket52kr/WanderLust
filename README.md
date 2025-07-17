@@ -1,6 +1,6 @@
 # Wunderlust  
 
-Wunderlust is a travel-based web application that allows users to explore, create, and interact with travel listings. It combines seamless user experience with robust functionality, making it an ideal platform for wanderlust-driven adventurers.
+Wunderlust is a travel and venue booking web application that allows users to explore, book, and interact with travel listings and venues. It combines seamless user experience with robust functionality, making it an ideal platform for wanderlust-driven adventurers and venue hosts.
 
 ## Key Features  
 1. **User Authentication**:  
@@ -25,6 +25,47 @@ Wunderlust is a travel-based web application that allows users to explore, creat
 - **Database**: MongoDB Atlas  
 - **Authentication**: Passport.js  
 - **Others**: npm packages, sessions, Google Maps API  
+
+---
+
+## Future Enhancements (Design-Thinking Approach)
+
+These enhancements are conceptual and focus on improving user experience, engagement, and administrative capabilities:
+
+### 1. Capturing User Search Activity  
+**Why it matters**: Understanding what users are searching for helps improve recommendations, identify popular destinations, and refine the UI.
+
+**Approach**:
+- Store search queries (destination, date range, filters) in a dedicated `search_logs` collection.
+- Use this data to identify trends or frequently searched destinations.
+- Eventually power personalized suggestions or show “popular searches” on the homepage.
+
+### 2. Admin Analytics Dashboard  
+**Why it matters**: An admin dashboard would provide insights into platform performance, user activity, and listing engagement.
+
+**Approach**:
+- Design a protected admin route (`/admin/dashboard`) displaying charts and metrics using Chart.js or D3.js.
+- Metrics could include total users, total listings, reviews per listing, top-rated destinations, and peak activity times.
+- Aggregate data using MongoDB aggregation pipelines for performance.
+
+### 3. Calendar View for Venue Availability  
+**Why it matters**: A visual calendar helps users easily see when a venue is available or booked.
+
+**Approach**:
+- Extend each listing with an `availability` schema to store booked date ranges.
+- Use a calendar UI library (e.g., FullCalendar or a custom EJS calendar) to display available vs. unavailable dates.
+- Allow venue owners to update availability through their dashboard.
+
+### 4. Basic Authentication for Admin and Venue Owners  
+**Why it matters**: Segregating roles ensures secure access to specific features, such as venue management or platform oversight.
+
+**Approach**:
+- Add a `role` field (e.g., `user`, `venue_owner`, `admin`) in the user model.
+- Implement middleware to check user roles before granting access to specific routes.
+- Customize the UI to show role-specific dashboards and tools.
+
+---
+
 
 
 
